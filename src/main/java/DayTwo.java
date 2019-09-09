@@ -19,10 +19,11 @@ public class DayTwo {
             int[] values =  Arrays.stream(inputLine.split("\\s+")).mapToInt(Integer::parseInt).sorted().toArray();
             boolean found = false;
             for(int i = values.length - 1; i > 0 && !found; i--) {
-                for(int checkIndex = i - 1; checkIndex >= 0 && !found; checkIndex--) {
+                for(int checkIndex = i - 1; checkIndex >= 0; checkIndex--) {
                     if(values[i] % values[checkIndex] == 0) {
                         total += values[i] / values[checkIndex];
                         found = true;
+                        break;
                     }
                 }
             }
