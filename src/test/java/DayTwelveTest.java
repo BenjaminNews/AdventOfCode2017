@@ -1,4 +1,4 @@
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -16,7 +16,7 @@ public class DayTwelveTest {
                         "6 <-> 4, 5";
 
         dayTwelve.setup(input);
-        assertEquals(6, dayTwelve.getPipeLength(0));
+        assertEquals(6, dayTwelve.getPipeLength());
     }
 
     @Test

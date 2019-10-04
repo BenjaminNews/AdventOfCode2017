@@ -1,6 +1,4 @@
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,17 +11,16 @@ public class DayTwelve {
     private List<Integer> initialPipesToCheck;
 
     public void setup(final String input) {
-        for(String s: input.split("\n")) {
-            String[] connectionValues = s.split(" <-> ");
+        for(String inputLine: input.split("\n")) {
+            String[] connectionValues = inputLine.split(" <-> ");
             int pipeNumber = Integer.parseInt(connectionValues[0]);
             String[] connectedTo = connectionValues[1].split(", ");
-            List<Integer> connectedPipes = Arrays.asList(connectedTo).stream().map(Integer::parseInt).collect(Collectors.toList());
+            List<Integer> connectedPipes = Arrays.stream(connectedTo).map(Integer::parseInt).collect(Collectors.toList());
             pipes.put(pipeNumber, connectedPipes);
         }
     }
 
-    public int getPipeLength(int masterPipeNumberToCheck) {
-        initialPipesToCheck = pipes.get(masterPipeNumberToCheck);
+    public int getPipeLength() {
         buildInitialPipeCollection();
         return initialPipesToCheck.size();
     }
@@ -31,45 +28,36 @@ public class DayTwelve {
     public int getGroups() {
         int groupCount = 0;
         while(pipes.size() > 0) {
-            initialPipesToCheck = pipes.get(getLowestValueKey());
-
             buildInitialPipeCollection();
-            for(Integer i : initialPipesToCheck) {
+            for(Integer i : initialPipesToCheck)
                 pipes.remove(i);
-            }
             groupCount++;
         }
-
         return groupCount;
     }
 
     private void buildInitialPipeCollection() {
+        initialPipesToCheck = pipes.get(getLowestValueKey());
         for (int i = 0; i < initialPipesToCheck.size(); i++) {
-
             List<Integer> pipesToCheck = pipes.get(initialPipesToCheck.get(i));
-
-            for (int x : pipesToCheck) {
-                if (!initialPipesToCheck.contains(x)) {
+            for (int x : pipesToCheck)
+                if (!initialPipesToCheck.contains(x))
                     initialPipesToCheck.add(x);
-                }
-            }
         }
     }
 
     private int getLowestValueKey() {
         int keyVal = Integer.MAX_VALUE;
-        for(int key : pipes.keySet()) {
-            if(key < keyVal) {
+        for(int key : pipes.keySet())
+            if(key < keyVal)
                 keyVal = key;
-            }
-        }
         return keyVal;
     }
 
     public static void main(String[] args) {
         DayTwelve dayTwelve = new DayTwelve();
         dayTwelve.setup(input);
-        System.out.printf("Part one: %d", dayTwelve.getPipeLength(0));
+        System.out.printf("Part one: %d", dayTwelve.getPipeLength());
         dayTwelve.setup(input);
         System.out.printf("%nPart two: %d", dayTwelve.getGroups());
     }
