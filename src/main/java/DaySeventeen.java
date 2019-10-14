@@ -1,43 +1,52 @@
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class DaySeventeen {
 
+    private static int index = 0;
+
     public static int getEndResult(int stepSize, int stepTotal, int getIndex) {
-        SimpleDateFormat formatter= new SimpleDateFormat("HH:mm:ss z");
-        List<Integer> values = new ArrayList<Integer>();
-        int index = 0;
+        List<Integer> values = new ArrayList<>(stepTotal);
+        index = 1;
         values.add(0);
-        for(int i = 1; i <= stepTotal; i++) {
-            if(values.size() == 1) {
-                index = 1;
-                values.add(i);
-            } else {
-                 if (index + stepSize == values.size()) {
-                    index = 1;
-                    values.add(index, i);
-                } else if(index + stepSize > values.size()) {
-                    index = (index + stepSize) % (values.size()) + 1;
-                    values.add(index, i);
-                } else if(index + stepSize == 0) {
-                    index = 0;
-                    values.add(index, i);
-                } else {
-                    index += stepSize + 1;
-                    values.add(index, i);
-                }
-            }
-            if(i % 100_000 == 0) {
-                System.out.println(formatter.format(System.currentTimeMillis()) + " " + i);
-            }
-        }
+        values.add(index, 1);
+        for(int size = values.size(); size <= stepTotal; size++)
+            if(values.size() == 0)
+                values.add(0);
+            else
+                values.add(spin(stepSize, size), size);
         return values.get(values.indexOf(getIndex) + 1);
     }
 
+    public static int getEndResultPartTwo(int stepSize, int stepTotal) {
+        int firstValue = 0;
+        for(int size = 1; size <= stepTotal; size++) {
+            if(index == 0) {
+                index = 1;
+                firstValue = size;
+            } else {
+                if(spin(stepSize, size) == 1)
+                    firstValue = size;
+            }
+        }
+        return firstValue;
+    }
+
+    private static int spin(int stepSize, int size) {
+        if (index + stepSize < size)
+            index += stepSize + 1;
+        else if (index + stepSize > size)
+            index = (index + stepSize) % (size) + 1;
+        else
+            index = 1;
+        return index;
+    }
+
     public static void main(String[] args) {
-        System.out.printf("Part one: %d", DaySeventeen.getEndResult(354, 2017, 2017));
-        System.out.printf("%nPart two: %d", DaySeventeen.getEndResult(354, 50_000_000, 0));
+        System.out.printf("Part one: %d%n", DaySeventeen.getEndResult(354, 2017, 2017));
+        System.out.printf("Part two: %d", DaySeventeen.getEndResultPartTwo(354, 50_000_000));
     }
 }
