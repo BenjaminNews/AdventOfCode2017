@@ -1,8 +1,5 @@
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class DaySeventeen {
 
@@ -10,14 +7,9 @@ public class DaySeventeen {
 
     public static int getEndResult(int stepSize, int stepTotal, int getIndex) {
         List<Integer> values = new ArrayList<>(stepTotal);
-        index = 1;
         values.add(0);
-        values.add(index, 1);
         for(int size = values.size(); size <= stepTotal; size++)
-            if(values.size() == 0)
-                values.add(0);
-            else
-                values.add(spin(stepSize, size), size);
+            values.add(spin(stepSize, size), size);
         return values.get(values.indexOf(getIndex) + 1);
     }
 
