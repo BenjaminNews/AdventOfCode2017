@@ -8,7 +8,7 @@ public class DayTwenty {
 
     private Map<Integer, Particle> particles = new HashMap<Integer, Particle>();
 
-    public void createParticles(String input) {
+    public DayTwenty (String input) {
         int particleNumber = 0;
         for(String particleData : input.split("\n")) {
             String[] values = particleData.trim().split("p=<\\s?|v=<\\s?|a=<\\s?");
@@ -25,15 +25,31 @@ public class DayTwenty {
     }
 
     public int partOne(int numberOfSteps) {
-        for (Integer particleNumber : particles.keySet()) {
-            Particle particle = particles.get(particleNumber);
-            for(int i = 0; i < numberOfSteps; i++) {
-                particle.move();
-            }
-            particles.put(particleNumber, particle);
+        for(int i = 0; i < numberOfSteps; i++) {
+            moveAndUpdate();
         }
-        int closestParticleDistance = Integer.MAX_VALUE;
+        return getParticleNumberThatIsClosest();
+    }
+
+    public int partTwo(int numberOfSteps) {
+        for(int i = 0; i < numberOfSteps; i++) {
+            moveAndUpdate();
+            for(int particleNumberToRemove : getCollidedParticles()) {
+                particles.remove(particleNumberToRemove);
+            }
+        }
+        return particles.size();
+    }
+
+    private void moveAndUpdate() {
+        for (Integer particleNumber : particles.keySet()) {
+            particles.get(particleNumber).move();
+        }
+    }
+
+    private int getParticleNumberThatIsClosest() {
         int particleNumberThatIsClosest = Integer.MIN_VALUE;
+        int closestParticleDistance = Integer.MAX_VALUE;
         for(int particleNumber = 0;  particleNumber < particles.size(); particleNumber++) {
             if(particles.get(particleNumber).getDistanceFromStart() < closestParticleDistance) {
                 closestParticleDistance = particles.get(particleNumber).getDistanceFromStart();
@@ -43,55 +59,31 @@ public class DayTwenty {
         return particleNumberThatIsClosest;
     }
 
-    public int partTwo(int numberOfSteps) {
-        for(int i = 0; i < numberOfSteps; i++) {
-
-            List<Integer> particlesToRemove = new ArrayList<Integer>();
-
-            for(Integer particleNumber : particles.keySet()) {
-                Particle particle = particles.get(particleNumber);
-                particle.move();
-                particles.put(particleNumber, particle);
-            }
-
-            for(Integer firstParticleNumber : particles.keySet()) {
-                Particle firstParticle = particles.get(firstParticleNumber);
-
-                int firstParticleXValue = firstParticle.xPosition;
-                int firstParticleYValue = firstParticle.yPosition;
-                int firstParticleZValue = firstParticle.zPosition;
-
-                for(Integer secondParticleNumber : particles.keySet()) {
-                    if(firstParticleNumber != secondParticleNumber) {
-                        Particle secondParticle = particles.get(secondParticleNumber);
-
-                        int secondParticleXValue = secondParticle.xPosition;
-                        int secondParticleYValue = secondParticle.yPosition;
-                        int secondParticleZValue = secondParticle.zPosition;
-
-                        if(firstParticleXValue == secondParticleXValue &&
-                            firstParticleYValue == secondParticleYValue &&
-                            firstParticleZValue == secondParticleZValue) {
-                            particlesToRemove.add(firstParticleNumber);
-                            particlesToRemove.add(secondParticleNumber);
-                        }
+    private List<Integer> getCollidedParticles() {
+        List<Integer> particlesToRemove = new ArrayList<>();
+        for(Integer firstParticleNumber : particles.keySet()) {
+            for(Integer secondParticleNumber : particles.keySet()) {
+                if(!firstParticleNumber.equals(secondParticleNumber)) {
+                    if(checkForCollision(particles.get(firstParticleNumber), particles.get(secondParticleNumber))) {
+                        particlesToRemove.add(firstParticleNumber);
+                        particlesToRemove.add(secondParticleNumber);
                     }
                 }
             }
-
-            for(int particleNumberToRemove : particlesToRemove) {
-                particles.remove(particleNumberToRemove);
-            }
         }
-        return particles.size();
+        return particlesToRemove;
+    }
+
+    private boolean checkForCollision(Particle firstParticle, Particle secondParticle) {
+        return firstParticle.xPosition == secondParticle.xPosition &&
+               firstParticle.yPosition == secondParticle.yPosition &&
+               firstParticle.zPosition == secondParticle.zPosition;
     }
 
     public static void main(String[] args) {
-        DayTwenty dayTwenty = new DayTwenty();
-        dayTwenty.createParticles(input);
+        DayTwenty dayTwenty = new DayTwenty(input);
         System.out.println(dayTwenty.partOne(1_000));
-        dayTwenty = new DayTwenty();
-        dayTwenty.createParticles(input);
+        dayTwenty = new DayTwenty(input);
         System.out.println(dayTwenty.partTwo(1_000));
     }
 
@@ -100,16 +92,14 @@ public class DayTwenty {
         private int xPosition;
         private int yPosition;
         private int zPosition;
-
         private int xVelocity;
         private int yVelocity;
         private int zVelocity;
-
         private final int xAcceleration;
         private final int yAcceleration;
         private final int zAcceleration;
 
-        public Particle(int xPosition, int yPosition, int zPosition, int xVelocity, int yVelocity, int zVelocity, int xAcceleration, int yAcceleration, int zAcceleration) {
+        private Particle(int xPosition, int yPosition, int zPosition, int xVelocity, int yVelocity, int zVelocity, int xAcceleration, int yAcceleration, int zAcceleration) {
             this.xPosition = xPosition;
             this.yPosition = yPosition;
             this.zPosition = zPosition;
@@ -121,7 +111,7 @@ public class DayTwenty {
             this.zAcceleration = zAcceleration;
         }
 
-        public void move() {
+        private void move() {
             xVelocity += xAcceleration;
             yVelocity += yAcceleration;
             zVelocity += zAcceleration;
@@ -130,7 +120,7 @@ public class DayTwenty {
             zPosition += zVelocity;
         }
 
-        public int getDistanceFromStart() {
+        private int getDistanceFromStart() {
             return Math.abs(xPosition) + Math.abs(yPosition) + Math.abs(zPosition);
         }
     }
