@@ -1,29 +1,33 @@
-import java.util.Arrays;
-import java.util.stream.IntStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DayTwentyTwo {
 
-    private long[][] grid;
+    private Map<String, Integer> grid = new HashMap<>();
 
     private int packetXPosition;
     private int packetYPosition;
 
-    private boolean UP =    true;
-    private boolean RIGHT = false;
-    private boolean DOWN =  false;
-    private boolean LEFT =  false;
+    private final static int CLEAN    = 0;
+    private final static int INFECTED = 1;
+    private final static int WEAKENED = 2;
+    private final static int FLAGGED  = 3;
 
-    public void setup(String input, int size) {
+    private static boolean UP =    true;
+    private static boolean RIGHT = false;
+    private static boolean DOWN =  false;
+    private static boolean LEFT =  false;
+
+    public void setup(String input) {
         String[] startValues = input.split("\n");
-        grid = new long[size - 1][size - 1];
-        int center = Math.round(size / 2) - Math.round(startValues[0].length() / 2) - 1;
+        int center = Math.round(startValues .length/ 2) - Math.round(startValues[0].length() / 2) - 1;
         int startX = center;
         int startY = center;
 
         for(String inputLine : startValues) {
             for(char c : inputLine.toCharArray()) {
                 if(c == '#') {
-                    grid[startX][startY] = 1;
+                    grid.put("(" + startX + "," + startY + ")", 1);
                 }
                 startY++;
             }
@@ -35,13 +39,16 @@ public class DayTwentyTwo {
     }
 
     public int partOne(int burstCount) {
+        final int CLEAN = 0;
+        final int INFECTED = 1;
         int infectedCount = 0;
         for(int burst = 0; burst < burstCount; burst++) {
-            if(grid[packetXPosition][packetYPosition] == 1) {
-                grid[packetXPosition][packetYPosition] = 0;
+            String position = "(" + packetXPosition + "," + packetYPosition + ")";
+            if(grid.containsKey(position) && grid.get(position) == INFECTED) {
+                grid.put(position, CLEAN);
                 turnRight();
             } else {
-                grid[packetXPosition][packetYPosition] = 1;
+                grid.put(position, INFECTED);
                 turnLeft();
                 infectedCount++;
             }
@@ -51,37 +58,29 @@ public class DayTwentyTwo {
     }
 
     public int partTwo(int burstCount) {
-        final int CLEAN = 0;
-        final int WEAKENED = 2;
-        final int INFECTED = 1;
-        final int FLAGGED = 3;
 
         int infectedCount = 0;
-
         for(int burst = 0; burst < burstCount; burst++) {
-
-//            Clean nodes become weakened.
-//            Weakened nodes become infected.
-//            Infected nodes become flagged.
-//            Flagged nodes become clean.
-
-//            If it is clean, it turns left.
-//            If it is weakened, it does not turn, and will continue moving in the same direction.
-//            If it is infected, it turns right.
-//            If it is flagged, it reverses direction, and will go back the way it came.
-            if(grid[packetXPosition][packetYPosition] == CLEAN) {
+            String position = "(" + packetXPosition + "," + packetYPosition + ")";
+            if(grid.containsKey(position)) {
+                int infectionStatus = grid.get(position);
+                if(infectionStatus == CLEAN) {
+                    grid.put(position, WEAKENED);
+                    turnLeft();
+                } else if(infectionStatus == WEAKENED) {
+                    grid.put(position, INFECTED);
+                    infectedCount++;
+                } else if(infectionStatus == INFECTED) {
+                    grid.put(position, FLAGGED);
+                    turnRight();
+                } else if(infectionStatus == FLAGGED) {
+                    grid.put(position, CLEAN);
+                    turnRight();
+                    turnRight();
+                }
+            } else {
+                grid.put(position, WEAKENED);
                 turnLeft();
-                grid[packetXPosition][packetYPosition] = WEAKENED;
-            } else if(grid[packetXPosition][packetYPosition] == WEAKENED) {
-                grid[packetXPosition][packetYPosition] = INFECTED;
-                infectedCount++;
-            } else if(grid[packetXPosition][packetYPosition] == INFECTED) {
-                turnRight();
-                grid[packetXPosition][packetYPosition] = FLAGGED;
-            } else if(grid[packetXPosition][packetYPosition] == FLAGGED) {
-                grid[packetXPosition][packetYPosition] = CLEAN;
-                turnRight();
-                turnRight();
             }
             moveForward();
         }
@@ -105,7 +104,7 @@ public class DayTwentyTwo {
         if(UP) {
             UP = false;
             LEFT = true;
-        }else if (LEFT) {
+        } else if (LEFT) {
             LEFT = false;
             DOWN = true;
         } else if (DOWN) {
@@ -135,10 +134,10 @@ public class DayTwentyTwo {
 
     public static void main(String[] args) {
         DayTwentyTwo dayTwentyTwo = new DayTwentyTwo();
-        dayTwentyTwo.setup(input, 10_000);
-        System.out.println(dayTwentyTwo.partOne(10_000));
-        dayTwentyTwo.setup(input, 10_000);
-        System.out.println(dayTwentyTwo.partOne(10_000_000));
+        dayTwentyTwo.setup(input);
+        System.out.printf("Part one: %d", dayTwentyTwo.partOne(10_000));
+        dayTwentyTwo.setup(input);
+        System.out.printf("\nPart two: %d", dayTwentyTwo.partTwo(10_000_000));
     }
 
     private static final String input = "..##.##.######...#.######\n" +

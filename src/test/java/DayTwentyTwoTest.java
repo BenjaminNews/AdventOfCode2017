@@ -10,7 +10,7 @@ public class DayTwentyTwoTest {
         String input =  "..#\n" +
                         "#..\n" +
                         "...";
-        dayTwentyTwo.setup(input, 70);
+        dayTwentyTwo.setup(input);
         assertEquals(41, dayTwentyTwo.partOne(70));
     }
 
@@ -20,7 +20,7 @@ public class DayTwentyTwoTest {
         String input =  "..#\n" +
                         "#..\n" +
                         "...";
-        dayTwentyTwo.setup(input, 100);
+        dayTwentyTwo.setup(input);
         assertEquals(26, dayTwentyTwo.partTwo(100));
     }
 
@@ -30,7 +30,7 @@ public class DayTwentyTwoTest {
         String input =  "..#\n" +
                         "#..\n" +
                         "...";
-        dayTwentyTwo.setup(input, 10_000);
+        dayTwentyTwo.setup(input);
         assertEquals(2511944, dayTwentyTwo.partTwo(10_000_000));
     }
 }
