@@ -13,12 +13,13 @@ public class DayTwentyTwo {
     private final static int WEAKENED = 2;
     private final static int FLAGGED  = 3;
 
-    private static boolean UP =    true;
-    private static boolean RIGHT = false;
-    private static boolean DOWN =  false;
-    private static boolean LEFT =  false;
+    private boolean UP =    true;
+    private boolean RIGHT = false;
+    private boolean DOWN =  false;
+    private boolean LEFT =  false;
 
     public void setup(String input) {
+        UP = true;
         String[] startValues = input.split("\n");
         int center = Math.round(startValues .length/ 2) - Math.round(startValues[0].length() / 2) - 1;
         int startX = center;
@@ -136,6 +137,7 @@ public class DayTwentyTwo {
         DayTwentyTwo dayTwentyTwo = new DayTwentyTwo();
         dayTwentyTwo.setup(input);
         System.out.printf("Part one: %d", dayTwentyTwo.partOne(10_000));
+        dayTwentyTwo = new DayTwentyTwo();
         dayTwentyTwo.setup(input);
         System.out.printf("\nPart two: %d", dayTwentyTwo.partTwo(10_000_000));
     }
